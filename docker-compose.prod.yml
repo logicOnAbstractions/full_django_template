@@ -1,0 +1,37 @@
+version: '3.9'
+
+services:
+  django:
+    # since both build: & image: are present, the result of the build: instruction will be called whatever name we assign to image:
+    image: my_django_img
+    build:
+      # everything relevent to that built is within /app
+      context: ./app
+      # specifying the Dockerfile to use, as it is not named Dockerfile
+      dockerfile: Dockerfile.prod
+      # using gunicorn as our webserver in front of Docker (manage traffic)
+    command: gunicorn myproject.wsgi:application --bind 0.0.0.0:8000
+    # expose only makes the port available on the Docker virtual network. Dfeault for django is 8000 so we'll just use that
+    expose:
+      - 8000
+    # we'll dump the (runtime) envars in there.  to user buildtime envars, see this issue: https://stackoverflow.com/questions/64405332/docker-compose-env-file-only-loading-env-but-not-a-specific-name/64436008#64436008
+    # short story being that you MUST name a file .env if you are to use those as build-time envars
+    # env_file:
+    #   - ./.env.prod
+    # volumes:
+    #   - static_vol:/home/app/web/static
+
+  # nginx acts as a reverse proxy in front of our app. see /nginx/nginx.conf for details
+  nginx:
+    build:
+      context: ./nginx
+    ports: 
+      - 80:80
+    depends_on:
+      - django
+    # volumes:
+    #   - static_vol:/home/app/web/static
+
+# volumes:
+#   # shared volume between django & nginx, so that nginx can serve static file, lessing the load on the server
+#   static_vol:

@@ -1,0 +1,48 @@
+# first stage - trying out Docker's multi stage builds 
+
+FROM python:3.9-slim as first_stage
+# set work directory
+WORKDIR /usr/src/app
+
+# set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+
+RUN pip install --upgrade pip
+# install dependencies
+COPY ./requirements.txt .
+RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requirements.txt
+
+
+# 2nd stage
+FROM python:3.9-slim
+
+# create directory for the app user
+RUN mkdir -p /home/app
+
+# we want a non-root user, so create it. this for -alpine if size matters
+# RUN addgroup -S app && adduser -S app -G app
+# Debian version:
+RUN groupadd -r app && useradd -r app -g app
+
+# create the appropriate directories
+ENV HOME=/home/app
+ENV APP_HOME=/home/app/web
+RUN mkdir $APP_HOME
+WORKDIR $APP_HOME
+
+# install dependencies
+# RUN apt-get update && apt-get install libpq
+COPY --from=first_stage /usr/src/app/wheels /wheels
+COPY --from=first_stage /usr/src/app/requirements.txt .
+RUN pip install --no-cache /wheels/*
+
+# copy project
+COPY . $APP_HOME
+
+# make app user owner of everything he'll need
+RUN chown -R app:app $APP_HOME
+
+# change to the app user
+USER app
