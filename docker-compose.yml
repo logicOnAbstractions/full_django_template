@@ -1,3 +1,4 @@
+# dev version
 version: '3.9'
 
 services:
@@ -7,36 +8,31 @@ services:
     build:
       # everything relevent to that built is within /app
       context: ./app
-      # specifying the Dockerfile to use, as it is not named Dockerfile
-      dockerfile: Dockerfile.prod
+      # redundant as it is the default but just for clarity
+      dockerfile: Dockerfile
       args:
         - "VERSION=${DJANGO_IMG_VERSION}"
       # using gunicorn as our webserver in front of Docker (manage traffic)
-    command: "gunicorn myproject.wsgi:application --bind ${DJANGO_IP}:${DJANGO_PORT}"
+    command: "python manage.py runserver ${DJANGO_IP}:${DJANGO_PORT}"
     # expose only makes the port available on the Docker virtual network. Dfeault for django is 8000 so we'll just use that
-    expose:
-      - "${DJANGO_PORT}"
+    ports:
+      - "${DJANGO_PORT}:${DJANGO_PORT}"
     # we'll dump the (runtime) envars in there.  to user buildtime envars, see this issue: https://stackoverflow.com/questions/64405332/docker-compose-env-file-only-loading-env-but-not-a-specific-name/64436008#64436008
     # short story being that you MUST name a file .env if you are to use those as build-time envars
-    # env_file:
-    #   - ./.env.prod
+    env_file:
+      - ./.env.dev
     volumes:
-      - static_vol:/home/app/web/static
+      - ./app:/usr/src/app/
 
   # nginx acts as a reverse proxy in front of our app. see /nginx/nginx.conf for details
-  nginx:
-    build:
-      context: ./nginx
-      dockerfile: Dockerfile.prod
-      args:
-        - "VERSION=${NGINX_VERSION}"
-    ports: 
-      - "${HOST_OPEN_PORT}:${NGINX_PORT}"
-    depends_on:
-      - django
-    volumes:
-      - static_vol:/home/app/web/static
-
-volumes:
-  # shared volume between django & nginx, so that nginx can serve static file, lessing the load on the server
-  static_vol:
+  # nginx:
+  #   build:
+  #     context: ./nginx
+  #     args:
+  #       - "VERSION=${NGINX_VERSION}"
+  #   ports: 
+  #     - "${HOST_OPEN_PORT}:${NGINX_PORT}"
+  #   depends_on:
+  #     - django
+  #   volumes:
+  #     - ./app:/usr/src/app/

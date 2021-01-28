@@ -1,6 +1,6 @@
 # first stage - trying out Docker's multi stage builds 
-
-FROM python:3.9-slim as first_stage
+ARG VERSION
+FROM ${VERSION} as first_stage
 # set work directory
 WORKDIR /usr/src/app
 
@@ -16,7 +16,7 @@ RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requir
 
 
 # 2nd stage
-FROM python:3.9-slim
+FROM ${VERSION}
 
 # create directory for the app user
 RUN mkdir -p /home/app

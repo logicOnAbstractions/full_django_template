@@ -10,7 +10,14 @@ a template that includes:
 Eventually could split branches for different dbs (maria, mysql, etc.) and even other variations on the setup (Vue.js etc.)
 
 
+usage
+----------
 
+dev:
+`docker-compose up --build`
+
+prod:
+`docker-compose --file docker-compose.prod.yml up --build`
 
 thoughts
 -------------
