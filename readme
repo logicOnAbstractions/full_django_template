@@ -9,9 +9,19 @@ a template that includes:
 
 Eventually could split branches for different dbs (maria, mysql, etc.) and even other variations on the setup (Vue.js etc.)
 
+
+
+
 thoughts
 -------------
 
-* to work with this, a few ideas:
+* cloning & using the template:
 	* could clone the rope, checkout -b whatever variations I want to start with
 	* then the new project could git remote rm <old remote> * put in place a new remote, which would be the repo for the new project going forward
+* maybe a fork could also work:
+	* to start a new proj, I fork the repo
+	* create a new branch
+	* any modifs to the original templat (improvements & tweaks) would be made on the initial branch I pull. Then I just PR that
+	* return to the working branch to actually work on the project
+	* eventually create a new repo & change the remote
+

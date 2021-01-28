@@ -18,8 +18,8 @@ services:
     # short story being that you MUST name a file .env if you are to use those as build-time envars
     # env_file:
     #   - ./.env.prod
-    # volumes:
-    #   - static_vol:/home/app/web/static
+    volumes:
+      - static_vol:/home/app/web/static
 
   # nginx acts as a reverse proxy in front of our app. see /nginx/nginx.conf for details
   nginx:
@@ -29,9 +29,9 @@ services:
       - 80:80
     depends_on:
       - django
-    # volumes:
-    #   - static_vol:/home/app/web/static
+    volumes:
+      - static_vol:/home/app/web/static
 
-# volumes:
-#   # shared volume between django & nginx, so that nginx can serve static file, lessing the load on the server
-#   static_vol:
+volumes:
+  # shared volume between django & nginx, so that nginx can serve static file, lessing the load on the server
+  static_vol:
