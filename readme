@@ -1,0 +1,17 @@
+about
+----------
+
+a template that includes:
+* django
+* postgres db
+* nginx & gunicorn
+* all on docker containers
+
+Eventually could split branches for different dbs (maria, mysql, etc.) and even other variations on the setup (Vue.js etc.)
+
+thoughts
+-------------
+
+* to work with this, a few ideas:
+	* could clone the rope, checkout -b whatever variations I want to start with
+	* then the new project could git remote rm <old remote> * put in place a new remote, which would be the repo for the new project going forward
