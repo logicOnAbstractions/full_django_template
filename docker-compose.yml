@@ -1,5 +1,4 @@
-# dev version
-version: '3.9'
+# dev version. don't forget to check the .env file (for build-time envars) and .env.dev (for runtime envars).
 
 services:
   django:
@@ -23,16 +22,22 @@ services:
       - ./.env.dev
     volumes:
       - ./app:/usr/src/app/
+    networks:
+      - backend
+    depends_on:
+      - db
+  db:
+    image: "${POSTGRES_VERSION}"
+    volumes:
+      - "db_data:${DATA_DIR}"
+    networks:
+      - backend
+    environment:
+      - POSTGRES_USER=pguser
+      - POSTGRES_PASSWORD=pgpass
+      - POSTGRES_DB=template_db
+volumes:
+  db_data:
 
-  # nginx acts as a reverse proxy in front of our app. see /nginx/nginx.conf for details
-  # nginx:
-  #   build:
-  #     context: ./nginx
-  #     args:
-  #       - "VERSION=${NGINX_VERSION}"
-  #   ports: 
-  #     - "${HOST_OPEN_PORT}:${NGINX_PORT}"
-  #   depends_on:
-  #     - django
-  #   volumes:
-  #     - ./app:/usr/src/app/
+networks:
+  backend:
