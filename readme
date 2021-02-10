@@ -19,6 +19,8 @@ dev:
 prod:
 `docker-compose --file docker-compose.prod.yml up --build`
 
+serves on 0.0.0.0:8000
+
 thoughts
 -------------
 

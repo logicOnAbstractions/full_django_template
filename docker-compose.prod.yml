@@ -40,3 +40,4 @@ services:
 volumes:
   # shared volume between django & nginx, so that nginx can serve static file, lessing the load on the server
   static_vol:
+  db_data:
